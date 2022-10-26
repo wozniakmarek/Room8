@@ -45,7 +45,7 @@ class _AuthScreenState extends State<AuthScreen> {
         final ref = FirebaseStorage.instance
             .ref()
             .child('user_image')
-            .child(authResult.user.uid + '.jpg');
+            .child(authResult.user!.uid + '.jpg');
 
         await ref.putFile(image).whenComplete(() => null);
 
@@ -53,7 +53,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(authResult.user.uid)
+            .doc(authResult.user!.uid)
             .set({
           'userName': userName,
           'email': email,
@@ -63,7 +63,7 @@ class _AuthScreenState extends State<AuthScreen> {
     } on PlatformException catch (err) {
       var message = 'An error occured, that sucks!';
       if (err.message != null) {
-        message = err.message;
+        message = err.message!;
       }
       ScaffoldMessenger.of(ctx).showSnackBar(
         SnackBar(

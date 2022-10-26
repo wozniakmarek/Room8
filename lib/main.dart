@@ -1,3 +1,4 @@
+// @dart=2.9
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:room8/screens/auth_screen.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:room8/screens/home_screen.dart';
 import 'package:room8/screens/splash_screen.dart';
 
 void main() async {
@@ -18,11 +20,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Room8',
       theme: ThemeData(
         primarySwatch: Colors.purple,
         backgroundColor: Color.fromARGB(255, 80, 8, 91).withOpacity(0.9),
-        accentColor: Colors.deepPurple,
+        accentColor: Color.fromARGB(255, 183, 20, 183),
+        focusColor: Color.fromARGB(255, 80, 8, 91).withOpacity(0.9),
         accentColorBrightness: Brightness.dark,
         buttonTheme: ButtonTheme.of(context).copyWith(
           buttonColor: Color.fromARGB(255, 80, 8, 91).withOpacity(0.9),
@@ -32,6 +35,20 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
+      /*themeMode: ThemeMode.dark,
+      darkTheme: ThemeData.dark().copyWith(
+        primaryColor: Color.fromARGB(255, 80, 8, 91).withOpacity(0.9),
+        accentColor: Color.fromARGB(255, 183, 20, 183),
+        focusColor: Color.fromARGB(255, 127, 13, 144).withOpacity(0.9),
+        accentColorBrightness: Brightness.dark,
+        buttonTheme: ButtonTheme.of(context).copyWith(
+          buttonColor: Color.fromARGB(255, 80, 8, 91).withOpacity(0.9),
+          textTheme: ButtonTextTheme.primary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+      ),*/
       home: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (ctx, userSnapshot) {
@@ -39,7 +56,7 @@ class MyApp extends StatelessWidget {
               return SplashScreen();
             }
             if (userSnapshot.hasData) {
-              return ChatScreen();
+              return HomeScreen();
             }
             return AuthScreen();
           }),

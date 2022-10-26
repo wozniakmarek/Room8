@@ -20,7 +20,7 @@ class _NewMessageState extends State<NewMessage> {
     final user = await FirebaseAuth.instance.currentUser;
     final userData = await FirebaseFirestore.instance
         .collection('users')
-        .doc(user.uid)
+        .doc(user!.uid)
         .get();
     // widget.sendMessage(_enteredMessage);
     FirebaseFirestore.instance.collection('chat').add({

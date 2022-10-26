@@ -10,6 +10,7 @@ import 'package:room8/widgets/chat/message_bubble.dart';
 class Messages extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
     return FutureBuilder(
         future: Future.value(FirebaseAuth.instance.currentUser),
         builder: (ctx, futureSnapshot) {
@@ -17,7 +18,7 @@ class Messages extends StatelessWidget {
             return Center(child: CircularProgressIndicator());
           }
 
-          return StreamBuilder(
+          return StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('chat')
                 .orderBy(
@@ -31,7 +32,7 @@ class Messages extends StatelessWidget {
                   child: CircularProgressIndicator(),
                 );
               }
-              final chatDocs = chatSnapshot.data.docs;
+              final chatDocs = chatSnapshot.data!.docs;
               return ListView.builder(
                 reverse: true,
                 itemCount: chatDocs.length,
@@ -40,7 +41,7 @@ class Messages extends StatelessWidget {
                   chatDocs[index]['userName'],
                   chatDocs[index]['userImage'],
                   chatDocs[index]['createdAt'],
-                  chatDocs[index]['userId'] == futureSnapshot.data.uid,
+                  chatDocs[index]['userId'] == user!.uid,
                   key: ValueKey(chatDocs[index].id),
                 ),
               );

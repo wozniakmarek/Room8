@@ -25,14 +25,14 @@ class _AuthFormState extends State<AuthForm> {
   var _userPassword = '';
   var _isLogin = true;
   final _formKey = GlobalKey<FormState>();
-  File _userImageFile;
+  late File _userImageFile;
 
   void _pickedImage(File image) {
     _userImageFile = image;
   }
 
   void _trySubmit() {
-    final isValid = _formKey.currentState.validate();
+    final isValid = _formKey.currentState?.validate();
     FocusScope.of(context).unfocus();
 
     if (_userImageFile == null && !_isLogin) {
@@ -45,8 +45,8 @@ class _AuthFormState extends State<AuthForm> {
       return;
     }
 
-    if (isValid) {
-      _formKey.currentState.save();
+    if (isValid!) {
+      _formKey.currentState?.save();
 
       widget._submitAuthForm(
         _userEmail.trim(),
@@ -90,7 +90,7 @@ class _AuthFormState extends State<AuthForm> {
                   ),
                   keyboardType: TextInputType.emailAddress,
                   onSaved: (value) => {
-                    _userEmail = value,
+                    _userEmail = value!,
                   },
                 ),
                 if (!_isLogin)
@@ -100,7 +100,7 @@ class _AuthFormState extends State<AuthForm> {
                     textCapitalization: TextCapitalization.words,
                     enableSuggestions: true,
                     validator: (value) {
-                      if (value.isEmpty || value.length < 5) {
+                      if (value!.isEmpty || value.length < 5) {
                         return 'Username is too short! Minimum 5 characters';
                       }
                       return null;
@@ -108,13 +108,13 @@ class _AuthFormState extends State<AuthForm> {
                     decoration: InputDecoration(
                         labelText: 'Username - min 5 characters'),
                     onSaved: (value) {
-                      _userName = value;
+                      _userName = value!;
                     },
                   ),
                 TextFormField(
                   key: ValueKey('password'),
                   validator: (value) {
-                    if (value.isEmpty || value.length < 7) {
+                    if (value!.isEmpty || value.length < 7) {
                       return 'Password is too short! Minimum 7 characters';
                     }
                     return null;
@@ -123,7 +123,7 @@ class _AuthFormState extends State<AuthForm> {
                       InputDecoration(labelText: 'Password - min 7 characters'),
                   obscureText: true,
                   onSaved: (value) {
-                    _userPassword = value;
+                    _userPassword = value!;
                   },
                 ),
                 SizedBox(
