@@ -17,7 +17,7 @@ class UserImagePicker extends StatefulWidget {
 }
 
 class _UserImagePickerState extends State<UserImagePicker> {
-  late File _pickedImage;
+  File? _pickedImage;
 
   void _pickImage() async {
     final pickedImageFile = await ImagePicker().getImage(
@@ -37,7 +37,7 @@ class _UserImagePickerState extends State<UserImagePicker> {
       CircleAvatar(
         radius: 40,
         backgroundColor: Colors.grey,
-        backgroundImage: _pickedImage != null ? FileImage(_pickedImage) : null,
+        backgroundImage: _pickedImage != null ? FileImage(_pickedImage!) : null,
       ),
       TextButton.icon(
         style: TextButton.styleFrom(

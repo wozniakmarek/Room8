@@ -32,6 +32,17 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.black87,
+              Colors.purple[800]!,
+            ],
+            stops: [0.4, 0.9],
+          ),
+        ),
         child: Column(
           children: [
             Expanded(

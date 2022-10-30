@@ -7,55 +7,49 @@ class Event {
   final String description;
   final DateTime from;
   final DateTime to;
-  final Color? backgroundColor;
+  final String backgroundColor;
   final bool isAllDay;
-  final String key;
+  late String? id;
+  late String? userId;
+  late String userName;
 
-  const Event({
+  Event({
     required this.title,
     required this.description,
     required this.from,
     required this.to,
-    this.backgroundColor,
+    required this.backgroundColor,
     required this.isAllDay,
-    required this.key,
+    this.id,
+    this.userId,
+    this.userName = '',
   });
 
   Map<String, dynamic> toMap() {
     return {
       'title': title,
       'description': description,
-      'from': from,
-      'to': to,
-      'backgroundColor': backgroundColor,
       'isAllDay': isAllDay,
-      'key': key,
+      'from': isAllDay ? Timestamp.fromDate(from) : from,
+      'to': isAllDay ? Timestamp.fromDate(to) : to,
+      'backgroundColor': backgroundColor,
+      'id': id,
+      'userId': userId,
+      'userName': userName,
     };
   }
 
-  //create snapshot from firestore data
-  factory Event.fromFireBaseSnapShotData(
-      QuerySnapshot querySnapshot, Color color) {
+  factory Event.fromFireBaseSnapShotData(QuerySnapshot querySnapshot) {
     return Event(
       title: querySnapshot.docs.first['title'],
       description: querySnapshot.docs.first['description'],
       from: querySnapshot.docs.first['from'].toDate(),
       to: querySnapshot.docs.first['to'].toDate(),
-      backgroundColor: color,
+      backgroundColor: querySnapshot.docs.first['backgroundColor'],
       isAllDay: querySnapshot.docs.first['isAllDay'],
-      key: querySnapshot.docs.first.id,
+      id: querySnapshot.docs.first.id,
+      userId: querySnapshot.docs.first['userId'],
+      userName: querySnapshot.docs.first['userName'],
     );
-  }
-
-  toJson() {
-    return {
-      'title': title,
-      'description': description,
-      'from': from,
-      'to': to,
-      'backgroundColor': backgroundColor,
-      'isAllDay': isAllDay,
-      'key': key,
-    };
   }
 }

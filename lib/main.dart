@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Room8',
       theme: ThemeData(
+        fontFamily: 'Raleway',
         primarySwatch: Colors.purple,
         backgroundColor: Color.fromARGB(255, 80, 8, 91).withOpacity(0.9),
         accentColor: Color.fromARGB(255, 183, 20, 183),

@@ -15,6 +15,4 @@ class EventProvider extends ChangeNotifier {
     _selectedDate = date;
     notifyListeners();
   }
-
-  void remove(Event event) {}
 }

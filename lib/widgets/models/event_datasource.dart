@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -27,11 +29,19 @@ class EventDataSource extends CalendarDataSource {
 
   @override
   Color getColor(int index) {
-    return appointments![index].backgroundColor;
+    String color = appointments![index].backgroundColor;
+    int colorInt = int.parse(color, radix: 16);
+    Color colorValue = Color(colorInt);
+    return colorValue;
   }
 
   @override
   bool isAllDay(int index) {
     return appointments![index].isAllDay;
+  }
+
+  @override
+  String getNotes(int index) {
+    return appointments![index].description;
   }
 }

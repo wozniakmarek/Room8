@@ -27,7 +27,7 @@ class _AuthScreenState extends State<AuthScreen> {
     String email,
     String userName,
     String password,
-    File image,
+    File? image,
     bool isLogin,
     BuildContext ctx,
   ) async {
@@ -47,7 +47,7 @@ class _AuthScreenState extends State<AuthScreen> {
             .child('user_image')
             .child(authResult.user!.uid + '.jpg');
 
-        await ref.putFile(image).whenComplete(() => null);
+        await ref.putFile(image!).whenComplete(() => null);
 
         final url = await ref.getDownloadURL();
 
@@ -81,6 +81,10 @@ class _AuthScreenState extends State<AuthScreen> {
         _isLogin = false;
       });
     }
+  }
+
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -138,11 +142,32 @@ class _AuthScreenState extends State<AuthScreen> {
                           font: NeonFont.Beon,
                           flickeringText: true,
                           flickeringLetters: [4],
+
                           //glowingDuration: Duration(minutes: 3),
                         ),
                       ),
                     ),
-                  Flexible(
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    //margin left: 20, right: 20,
+                    width: deviceSize.width * 0.85,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius: 8,
+                          color: Colors.black26,
+                          offset: Offset(
+                            0,
+                            2,
+                          ),
+                        )
+                      ],
+                    ),
                     child: AuthForm(_submitAuthForm, _isLogin),
                   ),
                 ],

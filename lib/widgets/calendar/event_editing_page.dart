@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/src/foundation/key.dart';
@@ -15,10 +17,9 @@ class EventEditingPage extends StatefulWidget {
   final Event? event;
 
   const EventEditingPage(
-    BuildContext? buildContext, {
-    Key? key,
+    BuildContext? buildContext,
     this.event,
-  }) : super(key: key);
+  );
 
   @override
   State<EventEditingPage> createState() => _EventEditingPageState();
@@ -28,29 +29,45 @@ class _EventEditingPageState extends State<EventEditingPage> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _colorController = TextEditingController();
+
+  List<Color> _colorCollection = <Color>[];
+
   DateTime? _from;
   DateTime? _to;
   bool _isAllDay = false;
   bool _isLoading = false;
+  late Color _color;
 
   @override
   void initState() {
+    _initializeEventColor();
     if (widget.event != null) {
+      _titleController.text = widget.event!.title;
+      _descriptionController.text = widget.event!.description;
       _from = widget.event!.from;
       _to = widget.event!.to;
+      _isAllDay = widget.event!.isAllDay;
+      _color = Color(int.parse(widget.event!.backgroundColor, radix: 16));
     } else {
-      final DateTime now = DateTime.now();
       _from = DateTime.now();
-      _to = DateTime.now().add(Duration(hours: 2));
+      _to = DateTime.now().add(const Duration(hours: 1));
+      _color = _colorCollection[Random().nextInt(9)];
     }
+
     super.initState();
+  }
+
+  @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
   }
 
   @override
   void dispose() {
     _titleController.dispose();
-    _colorController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 
@@ -70,12 +87,11 @@ class _EventEditingPageState extends State<EventEditingPage> {
               children: <Widget>[
                 buildTitle(),
                 SizedBox(height: 8),
+                SizedBox(height: 8),
+                buildAllDaySwitch(),
                 buildDates(),
                 SizedBox(height: 8),
-                /*buildAllDaySwitch(),
-                if (!_allDay) buildTimeRange(),
-                SizedBox(height: 8),
-                buildNotes(),*/
+                buildNotes(),
               ],
             ),
           )),
@@ -113,7 +129,23 @@ class _EventEditingPageState extends State<EventEditingPage> {
           buildTo(),
         ],
       );
-
+  Widget buildAllDaySwitch() => Row(
+        children: [
+          Text('All day'),
+          Switch(
+            value: _isAllDay,
+            onChanged: (value) => setState(() => _isAllDay = value),
+          ),
+        ],
+      );
+  Widget buildNotes() => TextFormField(
+        maxLines: 10,
+        decoration: InputDecoration(
+          border: UnderlineInputBorder(),
+          labelText: 'Notes',
+        ),
+        controller: _descriptionController,
+      );
   Widget buildFrom() => buildHeader(
         header: 'Od',
         child: Row(
@@ -126,12 +158,13 @@ class _EventEditingPageState extends State<EventEditingPage> {
                 onClicked: () => pickFromDateTime(pickDate: true),
               ),
             ),
-            Expanded(
-              child: buildDropDownField(
-                text: DateFormat.Hm().format(_from!),
-                onClicked: () => pickFromDateTime(pickDate: false),
+            if (!_isAllDay)
+              Expanded(
+                child: buildDropDownField(
+                  text: DateFormat.Hm().format(_from!),
+                  onClicked: () => pickFromDateTime(pickDate: false),
+                ),
               ),
-            ),
           ],
         ),
       );
@@ -167,12 +200,13 @@ class _EventEditingPageState extends State<EventEditingPage> {
                 onClicked: () => pickToDateTime(pickDate: true),
               ),
             ),
-            Expanded(
-              child: buildDropDownField(
-                text: DateFormat.Hm().format(_to!),
-                onClicked: () => pickToDateTime(pickDate: false),
+            if (!_isAllDay)
+              Expanded(
+                child: buildDropDownField(
+                  text: DateFormat.Hm().format(_to!),
+                  onClicked: () => pickToDateTime(pickDate: false),
+                ),
               ),
-            ),
           ],
         ),
       );
@@ -233,34 +267,87 @@ class _EventEditingPageState extends State<EventEditingPage> {
 
   Future _saveForm() async {
     final isValid = _formKey.currentState!.validate();
-    if (!isValid) return;
+    if (!isValid) {
+      return;
+    }
 
     final title = _titleController.text;
-    final color = _colorController.text;
+    final description = _descriptionController.text;
+    final color = _color;
+    String colorString = color.toString(); // Color(0x12345678)
+    String valueColorString = colorString.split('(0x')[1].split(')')[0];
+
     final event = Event(
       title: title,
-      description: 'description',
+      description: _descriptionController.text,
       from: _from as DateTime,
       to: _to as DateTime,
-      isAllDay: false,
-      key: _formKey.currentState.hashCode.toString(),
+      isAllDay: _isAllDay,
+      backgroundColor: valueColorString,
+      id: widget.event?.id,
     );
+    //check if event is added or modify
+    if (widget.event == null) {
+      _addEventToFirestore(event);
+    } else {
+      _updateEventInFirestore(event);
+      //create dialog to inform user about success
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Success'),
+          content: Text('Event has been updated'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+      Navigator.of(context).pop();
+      Navigator.of(context).pop();
+    }
+    ;
 
-    /////////////////////////FIRESTORE TIME/////////////////////////
-    FocusScope.of(context).unfocus();
-    final user = await FirebaseAuth.instance.currentUser;
-
-    await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
-
-    await FirebaseFirestore.instance.collection('events').add(event.toMap());
     Navigator.of(context).pop();
-    updateCalendar();
   }
 
-  void updateCalendar() {
-    setState(() {
-      //update the calendar screen (calendar) with the new event added to the list of events in the calendar screen (list of events)
-      //calendar.updateCalendar();
-    });
+  void _initializeEventColor() {
+    _colorCollection.add(const Color(0xFF0F8644));
+    _colorCollection.add(const Color(0xFF8B1FA9));
+    _colorCollection.add(const Color(0xFFD20100));
+    _colorCollection.add(const Color(0xFFFC571D));
+    _colorCollection.add(const Color(0xFF36B37B));
+    _colorCollection.add(const Color(0xFF01A1EF));
+    _colorCollection.add(const Color(0xFF3D4FB5));
+    _colorCollection.add(const Color(0xFFE47C73));
+    _colorCollection.add(const Color(0xFF636363));
+    _colorCollection.add(const Color(0xFF0A8043));
+  }
+
+  void _updateEventInFirestore(Event event) {
+    FirebaseFirestore.instance
+        .collection('events')
+        .doc(event.id)
+        .update(event.toMap());
+  }
+
+  Future<void> _addEventToFirestore(Event event) async {
+    // get ref to the event document
+    DocumentReference eventRef =
+        FirebaseFirestore.instance.collection('events').doc();
+
+    final user = await FirebaseAuth.instance.currentUser;
+    final userData = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user!.uid)
+        .get();
+
+    // add event to firestore
+    event.id = eventRef.id;
+    event.userId = user.uid;
+    event.userName = userData['userName'];
+    eventRef.set(event.toMap());
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:room8/screens/chat_screen.dart';
+import 'package:room8/screens/profil_screen.dart';
 import 'package:room8/screens/respons_screen.dart';
 import 'package:room8/screens/shop_screen.dart';
 
@@ -23,6 +24,10 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedPageIndex = index;
     });
+  }
+
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -57,36 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Room8'),
-        actions: [
-          DropdownButton(
-            underline: Container(),
-            icon: Icon(
-              Icons.person,
-              color: Theme.of(context).primaryIconTheme.color,
-            ),
-            items: [
-              DropdownMenuItem(
-                child: Container(
-                  child: Row(
-                    children: [
-                      Icon(Icons.exit_to_app),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      Text('Logout'),
-                    ],
-                  ),
-                ),
-                value: 'logout',
-              ),
-            ],
-            onChanged: (itemIdentifier) {
-              if (itemIdentifier == 'logout') {
-                FirebaseAuth.instance.signOut();
-              }
-            },
-          ),
-        ],
+        //TODO: add profile screen ass a drawer to the appbar
       ),
       body: _pages[_selectedPageIndex]['page'] as Widget,
       bottomNavigationBar: BottomNavigationBar(

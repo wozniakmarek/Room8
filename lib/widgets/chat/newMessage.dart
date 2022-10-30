@@ -42,6 +42,8 @@ class _NewMessageState extends State<NewMessage> {
         children: <Widget>[
           Expanded(
             child: TextField(
+              //color of the text in the text field white in this case
+              style: TextStyle(color: Colors.white),
               decoration: InputDecoration(labelText: 'Send a message...'),
               controller: _controller,
               textCapitalization: TextCapitalization.sentences,
@@ -57,7 +59,7 @@ class _NewMessageState extends State<NewMessage> {
           IconButton(
             icon: Icon(Icons.send),
             onPressed: _enteredMessage.trim().isEmpty ? null : _sendMessage,
-            color: Theme.of(context).primaryColor,
+            color: Colors.white,
           ),
         ],
       ),

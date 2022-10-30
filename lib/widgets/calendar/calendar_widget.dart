@@ -15,7 +15,6 @@ class CalendarWidget extends StatefulWidget {
 }
 
 class CalendarWidgetState extends State<CalendarWidget> {
-  List<Color> _colorCollection = <Color>[];
   EventDataSource? events;
   final List<String> options = <String>['Add', 'Delete', 'Update'];
   final fireStoreReference = FirebaseFirestore.instance;
@@ -27,13 +26,10 @@ class CalendarWidgetState extends State<CalendarWidget> {
 
   @override
   void initState() {
-    _initializeEventColor();
-    //get data from firestore and add to calendar
     fireStoreReference.collection('events').get().then((querySnapshot) {
       querySnapshot.docs.forEach((result) {
         final Random random = new Random();
-        Event app = Event.fromFireBaseSnapShotData(
-            querySnapshot, _colorCollection[random.nextInt(9)]);
+        Event app = Event.fromFireBaseSnapShotData(querySnapshot);
         setState(() {
           events?.appointments?.add(app);
           events?.notifyListeners(CalendarDataSourceAction.add, [app]);
@@ -48,36 +44,24 @@ class CalendarWidgetState extends State<CalendarWidget> {
           if (element.type == DocumentChangeType.added) {
             final event = Event(
               title: element.doc.data()!['title'],
-              from: element.doc.data()!['from'].toDate(),
-              to: element.doc.data()!['to'].toDate(),
               isAllDay: element.doc.data()!['isAllDay'],
-              backgroundColor: _colorCollection[Random().nextInt(9)],
+              from: element.doc.data()!['isAllDay']
+                  ? element.doc.data()!['from'].toDate()
+                  : element.doc.data()!['from'].toDate(),
+              to: element.doc.data()!['isAllDay']
+                  ? element.doc.data()!['to'].toDate()
+                  : element.doc.data()!['to'].toDate(),
+              backgroundColor: element.doc.data()!['backgroundColor'],
               description: element.doc.data()!['description'],
-              key: element.doc.id,
+              id: element.doc.data()!['id'],
+              userId: element.doc.data()!['userId'],
+              userName: element.doc.data()!['userName'],
             );
             events?.appointments?.add(event);
-            setState(() {});
-          } else if (element.type == DocumentChangeType.modified) {
-            final event = Event(
-              title: element.doc.data()!['title'],
-              from: element.doc.data()!['from'].toDate(),
-              to: element.doc.data()!['to'].toDate(),
-              isAllDay: element.doc.data()!['isAllDay'],
-              backgroundColor: _colorCollection[Random().nextInt(9)],
-              description: element.doc.data()!['description'],
-              key: element.doc.id,
-            );
-            events?.appointments
-                ?.removeWhere((element) => element.key == event.key);
-            events?.appointments?.add(event);
-            setState(() {});
-          } else if (element.type == DocumentChangeType.removed) {
-            events?.appointments
-                ?.removeWhere((element) => element.key == element.key);
             setState(() {});
           }
           getDataFromFireStore().then((value) {
-            SchedulerBinding.instance!.addPostFrameCallback((_) {
+            SchedulerBinding.instance.addPostFrameCallback((_) {
               setState(() {});
             });
           });
@@ -97,17 +81,20 @@ class CalendarWidgetState extends State<CalendarWidget> {
 
   Future<void> getDataFromFireStore() async {
     var snapShotsValue = await fireStoreReference.collection('events').get();
-
+    //
     final Random random = new Random();
     List<Event> list = snapShotsValue.docs
         .map((e) => Event(
-            title: e.data()['title'],
-            from: e.data()['from'].toDate(),
-            to: e.data()['to'].toDate(),
-            backgroundColor: _colorCollection[random.nextInt(9)],
-            isAllDay: false,
-            description: e.data()['description'],
-            key: e.id))
+              title: e.data()['title'],
+              from: e.data()['from'].toDate(),
+              to: e.data()['to'].toDate(),
+              backgroundColor: e.data()['backgroundColor'],
+              isAllDay: e.data()['isAllDay'],
+              description: e.data()['description'],
+              id: e.data()['id'],
+              userId: e.data()['userId'],
+              userName: e.data()['userName'],
+            ))
         .toList();
     setState(() {
       events = EventDataSource(list);
@@ -126,34 +113,20 @@ class CalendarWidgetState extends State<CalendarWidget> {
       onLongPress: (details) {
         showModalBottomSheet(
             context: context,
-            builder: ((context) => _buildBottomSheet(events!)));
+            builder: ((context) => _buildBottomSheet(events!, details.date)));
       },
     );
   }
 
-  void _initializeEventColor() {
-    _colorCollection.add(const Color(0xFF0F8644));
-    _colorCollection.add(const Color(0xFF8B1FA9));
-    _colorCollection.add(const Color(0xFFD20100));
-    _colorCollection.add(const Color(0xFFFC571D));
-    _colorCollection.add(const Color(0xFF36B37B));
-    _colorCollection.add(const Color(0xFF01A1EF));
-    _colorCollection.add(const Color(0xFF3D4FB5));
-    _colorCollection.add(const Color(0xFFE47C73));
-    _colorCollection.add(const Color(0xFF636363));
-    _colorCollection.add(const Color(0xFF0A8043));
-  }
-
-  _buildBottomSheet(EventDataSource events) {
+  _buildBottomSheet(EventDataSource events, DateTime? date) {
     //return SfCalendar view with the required properties to create the calendar view with timelineDay view.
     return Container(
-      height: 300,
       child: SfCalendar(
-          view: CalendarView.timelineDay,
+          view: CalendarView.timelineWeek,
           dataSource: events,
           timeSlotViewSettings: TimeSlotViewSettings(
-            timeInterval: const Duration(minutes: 60),
-            timeIntervalHeight: 60,
+            timeInterval: const Duration(hours: 1),
+            timeIntervalHeight: 45,
             minimumAppointmentDuration: const Duration(minutes: 60),
           ),
           headerHeight: 0,
@@ -171,38 +144,6 @@ class CalendarWidgetState extends State<CalendarWidget> {
                           event: event,
                         )));
           }),
-    );
-  }
-}
-
-class DayCalendar extends StatefulWidget {
-  const DayCalendar(
-    this.events,
-    this.date,
-  );
-
-  final DateTime? date;
-  final EventDataSource? events;
-
-  @override
-  State<DayCalendar> createState() => _DayCalendarState();
-}
-
-class _DayCalendarState extends State<DayCalendar> {
-  @override
-  Widget build(BuildContext context) {
-    //filter events for selected date
-    List events = widget.events!.appointments!
-        .where((element) =>
-            element.from!.day == widget.date!.day &&
-            element.from!.month == widget.date!.month &&
-            element.from!.year == widget.date!.year)
-        .toList();
-    return SfCalendar(
-      dataSource: widget.events,
-      view: CalendarView.timelineDay,
-      monthViewSettings: MonthViewSettings(
-          appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
     );
   }
 }
