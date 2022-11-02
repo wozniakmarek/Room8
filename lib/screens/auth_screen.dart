@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,7 +22,8 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final _auth = FirebaseAuth.instance;
-  var _isLogin = false;
+  var _isLoading = false;
+  List<Color> _colorCollection = <Color>[];
 
   void _submitAuthForm(
     String email,
@@ -33,24 +35,31 @@ class _AuthScreenState extends State<AuthScreen> {
   ) async {
     UserCredential authResult;
     try {
-      setState(() {});
-
+      setState(() {
+        _isLoading = true;
+      });
       if (isLogin) {
         authResult = await _auth.signInWithEmailAndPassword(
-            email: email, password: password);
+          email: email,
+          password: password,
+        );
+        super.dispose();
       } else {
         authResult = await _auth.createUserWithEmailAndPassword(
-            email: email, password: password);
+          email: email,
+          password: password,
+        );
 
         final ref = FirebaseStorage.instance
             .ref()
             .child('user_image')
             .child(authResult.user!.uid + '.jpg');
-
-        await ref.putFile(image!).whenComplete(() => null);
-
+        await ref.putFile(image!);
         final url = await ref.getDownloadURL();
-
+        _initializeEventColor();
+        final color = _colorCollection[Random().nextInt(9)];
+        String colorString = color.toString(); // Color(0x12345678)
+        String valueColorString = colorString.split('(0x')[1].split(')')[0];
         await FirebaseFirestore.instance
             .collection('users')
             .doc(authResult.user!.uid)
@@ -58,10 +67,13 @@ class _AuthScreenState extends State<AuthScreen> {
           'userName': userName,
           'email': email,
           'image_url': url,
+          'phone': '',
+          'color': valueColorString,
         });
+        super.dispose();
       }
     } on PlatformException catch (err) {
-      var message = 'An error occured, that sucks!';
+      var message = 'An error occurred, please check your credentials!';
       if (err.message != null) {
         message = err.message!;
       }
@@ -72,19 +84,26 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
       );
       setState(() {
-        _isLogin = false;
+        _isLoading = false;
       });
-      print(message);
+      super.dispose();
     } catch (err) {
       print(err);
-      setState(() {
-        _isLogin = false;
-      });
+      _isLoading = false;
     }
   }
 
-  void dispose() {
-    super.dispose();
+  void _initializeEventColor() {
+    _colorCollection.add(const Color(0xFF0F8644));
+    _colorCollection.add(const Color(0xFF8B1FA9));
+    _colorCollection.add(const Color(0xFFD20100));
+    _colorCollection.add(const Color(0xFFFC571D));
+    _colorCollection.add(const Color(0xFF36B37B));
+    _colorCollection.add(const Color(0xFF01A1EF));
+    _colorCollection.add(const Color(0xFF3D4FB5));
+    _colorCollection.add(const Color(0xFFE47C73));
+    _colorCollection.add(const Color(0xFF636363));
+    _colorCollection.add(const Color(0xFF0A8043));
   }
 
   @override
@@ -114,26 +133,12 @@ class _AuthScreenState extends State<AuthScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  if (MediaQuery.of(context).orientation !=
+                  /* if (MediaQuery.of(context).orientation !=
                       Orientation.landscape)
                     Flexible(
                       child: Container(
-                        //transform: Matrix4.rotationZ(-8 * pi / 180)
-                        //  ..translate(-10.0),
-                        // ..translate(-10.0),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          //color: Colors.deepOrange.shade900,
-                          /*boxShadow: [
-                          BoxShadow(
-                            blurRadius: 20,
-                            color: Colors.black26,
-                            offset: Offset(
-                              0,
-                              0,
-                            ),
-                          )
-                        ],*/
                         ),
                         child: Neon(
                           text: 'Room8',
@@ -142,11 +147,9 @@ class _AuthScreenState extends State<AuthScreen> {
                           font: NeonFont.Beon,
                           flickeringText: true,
                           flickeringLetters: [4],
-
-                          //glowingDuration: Duration(minutes: 3),
                         ),
                       ),
-                    ),
+                    ),*/
                   SizedBox(
                     height: 30,
                   ),
@@ -168,7 +171,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         )
                       ],
                     ),
-                    child: AuthForm(_submitAuthForm, _isLogin),
+                    child: AuthForm(_submitAuthForm, _isLoading),
                   ),
                 ],
               ),

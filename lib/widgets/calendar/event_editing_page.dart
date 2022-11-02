@@ -58,20 +58,6 @@ class _EventEditingPageState extends State<EventEditingPage> {
   }
 
   @override
-  void setState(VoidCallback fn) {
-    if (mounted) {
-      super.setState(fn);
-    }
-  }
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -285,6 +271,7 @@ class _EventEditingPageState extends State<EventEditingPage> {
       isAllDay: _isAllDay,
       backgroundColor: valueColorString,
       id: widget.event?.id,
+      userId: widget.event?.userId,
     );
     //check if event is added or modify
     if (widget.event == null) {
@@ -327,6 +314,7 @@ class _EventEditingPageState extends State<EventEditingPage> {
   }
 
   void _updateEventInFirestore(Event event) {
+    event.userName = widget.event!.userName;
     FirebaseFirestore.instance
         .collection('events')
         .doc(event.id)
@@ -348,6 +336,7 @@ class _EventEditingPageState extends State<EventEditingPage> {
     event.id = eventRef.id;
     event.userId = user.uid;
     event.userName = userData['userName'];
+    event.backgroundColor = userData['color'];
     eventRef.set(event.toMap());
   }
 }

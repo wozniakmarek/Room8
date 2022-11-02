@@ -51,6 +51,8 @@ dependencies:
   grouped_list: ^4.2.0
   syncfusion_flutter_calendar: ^20.3.50
   provider: ^6.0.4
+  fast_color_picker: ^0.1.1
+  line_awesome_flutter: ^2.0.0
 
 dev_dependencies:
   flutter_test:

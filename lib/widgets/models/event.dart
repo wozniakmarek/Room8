@@ -7,7 +7,7 @@ class Event {
   final String description;
   final DateTime from;
   final DateTime to;
-  final String backgroundColor;
+  late String backgroundColor;
   final bool isAllDay;
   late String? id;
   late String? userId;

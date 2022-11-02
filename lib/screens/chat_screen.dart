@@ -32,7 +32,7 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        /*decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -42,7 +42,7 @@ class ChatScreen extends StatelessWidget {
             ],
             stops: [0.4, 0.9],
           ),
-        ),
+        ),*/
         child: Column(
           children: [
             Expanded(

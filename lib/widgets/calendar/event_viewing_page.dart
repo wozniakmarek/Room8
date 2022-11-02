@@ -61,13 +61,7 @@ class EventViewingPage extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          //for colors, use the colors from the event
           colors: [color, color.withOpacity(0.5), color.withOpacity(0.2)],
-          /*colors: [
-                      Colors.black87,
-                      Colors.purple[800]!,
-                      Colors.purple[600]!,
-                    ],*/
           stops: [0.4, 0.8, 0.9],
         ),
       ),

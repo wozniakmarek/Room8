@@ -20,10 +20,6 @@ class CalendarWidgetState extends State<CalendarWidget> {
   final fireStoreReference = FirebaseFirestore.instance;
   bool isInitialLoaded = false;
 
-  void dispose() {
-    super.dispose();
-  }
-
   @override
   void initState() {
     fireStoreReference.collection('events').get().then((querySnapshot) {
@@ -40,7 +36,7 @@ class CalendarWidgetState extends State<CalendarWidget> {
       });
       //add listener to firestore collection
       fireStoreReference.collection('events').snapshots().listen((event) {
-        event.docChanges.forEach((element) {
+        for (var element in event.docChanges) {
           if (element.type == DocumentChangeType.added) {
             final event = Event(
               title: element.doc.data()!['title'],
@@ -58,17 +54,16 @@ class CalendarWidgetState extends State<CalendarWidget> {
               userName: element.doc.data()!['userName'],
             );
             events?.appointments?.add(event);
-            setState(() {});
+            events?.notifyListeners(CalendarDataSourceAction.add, [event]);
           }
           getDataFromFireStore().then((value) {
             SchedulerBinding.instance.addPostFrameCallback((_) {
               setState(() {});
             });
           });
-        });
+        }
       });
     });
-    super.initState();
   }
 
   //after saveForm is called, this method is called to update the calendar
@@ -123,6 +118,8 @@ class CalendarWidgetState extends State<CalendarWidget> {
     return Container(
       child: SfCalendar(
           view: CalendarView.timelineWeek,
+          //set Monday as the first day of the week
+          firstDayOfWeek: 1,
           dataSource: events,
           timeSlotViewSettings: TimeSlotViewSettings(
             timeInterval: const Duration(hours: 1),
