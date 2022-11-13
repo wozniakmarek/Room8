@@ -66,7 +66,6 @@ class CalendarWidgetState extends State<CalendarWidget> {
     });
   }
 
-  //after saveForm is called, this method is called to update the calendar
   void updateCalendar(Event event) {
     setState(() {
       events!.appointments!.add(event);
