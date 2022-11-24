@@ -24,15 +24,12 @@ class EventViewingPage extends StatelessWidget {
   }) : super(key: key);
 
   Widget buildDate(BuildContext context, DateTime _from, DateTime _to) {
-    //if event.from and event.to are on the same day, only show the date once
     final bool isSameDay = event.from.day == event.to.day;
     final bool isSameMonth = event.from.month == event.to.month;
     final bool isSameYear = event.from.year == event.to.year;
 
     final DateFormat dateFormat = DateFormat.MMMMd();
     final DateFormat timeFormat = DateFormat.jm();
-
-    //create string for dates eg.(Feb 1, 2021 - Feb 2, 2021)
     final String date = isSameDay
         ? dateFormat.format(event.from)
         : '${dateFormat.format(event.from)} - ${dateFormat.format(event.to)}';
@@ -98,9 +95,7 @@ class EventViewingPage extends StatelessWidget {
                         event.title,
                         style: TextStyle(
                           fontFamily: 'Montserrat',
-                          // make it bold
                           fontWeight: FontWeight.w900,
-
                           fontSize: 40.0,
                           color: Colors.black,
                         ),
@@ -208,7 +203,6 @@ class EventViewingPage extends StatelessWidget {
           ),
           ActionButton(
             onPressed: () {
-              //show dialog to confirm delete
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -288,7 +282,6 @@ class EventViewingPage extends StatelessWidget {
   Future _removeEvent(BuildContext context, Event event) async {
     final _event = event;
 
-    //remove event from firestore database
     await FirebaseFirestore.instance
         .collection('events')
         .doc(_event.id)

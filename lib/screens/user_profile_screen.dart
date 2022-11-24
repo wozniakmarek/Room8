@@ -19,8 +19,6 @@ class UserProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //get id from UserProfileScreen(String id); and use it to get the user data
-
     return StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('users')

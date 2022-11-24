@@ -25,10 +25,7 @@ class _ProfilScreenState extends State<ProfilScreen> {
     String userPassword,
   ) async {
     UserCredential authResult;
-    //stay still logged in after update profile
     try {
-      //relogin user after update profile with new data from firestore db firebase auth
-
       authResult = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: userEmail, password: userPassword);
       super.dispose();
@@ -79,7 +76,6 @@ class _ProfilScreenState extends State<ProfilScreen> {
                   padding: EdgeInsets.zero,
                   children: <Widget>[
                     UserAccountsDrawerHeader(
-                      //set background color
                       decoration: BoxDecoration(
                         color: Color(
                             int.parse(snapshot.data!['color'], radix: 16)),
@@ -91,7 +87,6 @@ class _ProfilScreenState extends State<ProfilScreen> {
                             NetworkImage(snapshot.data!['image_url']),
                       ),
                     ),
-                    //add List Tile with icon
                     ListTile(
                       leading: Icon(Icons.group),
                       title: Text('Roommates'),

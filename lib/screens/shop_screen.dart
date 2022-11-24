@@ -49,7 +49,6 @@ class _ShopScreenState extends State<ShopScreen> {
                       ],
                       onSelected: (value) {
                         if (value == 1) {
-                          //edit
                           _title = documentSnapshot['name'];
                           showDialog(
                               context: context,
@@ -84,7 +83,6 @@ class _ShopScreenState extends State<ShopScreen> {
                                 );
                               });
                         } else if (value == 2) {
-                          //delete
                           fireStoreReference
                               .collection('shop')
                               .doc(documentSnapshot.id)

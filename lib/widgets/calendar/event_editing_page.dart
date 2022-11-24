@@ -139,7 +139,6 @@ class _EventEditingPageState extends State<EventEditingPage> {
             Expanded(
               flex: 2,
               child: buildDropDownField(
-                //give text value from _from and DateFormat.yMMMEd().format(_from)
                 text: DateFormat.yMMMEd().format(_from!),
                 onClicked: () => pickFromDateTime(pickDate: true),
               ),
@@ -260,7 +259,7 @@ class _EventEditingPageState extends State<EventEditingPage> {
     final title = _titleController.text;
     final description = _descriptionController.text;
     final color = _color;
-    String colorString = color.toString(); // Color(0x12345678)
+    String colorString = color.toString();
     String valueColorString = colorString.split('(0x')[1].split(')')[0];
 
     final event = Event(
@@ -273,12 +272,10 @@ class _EventEditingPageState extends State<EventEditingPage> {
       id: widget.event?.id,
       userId: widget.event?.userId,
     );
-    //check if event is added or modify
     if (widget.event == null) {
       _addEventToFirestore(event);
     } else {
       _updateEventInFirestore(event);
-      //create dialog to inform user about success
       await showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -322,7 +319,6 @@ class _EventEditingPageState extends State<EventEditingPage> {
   }
 
   Future<void> _addEventToFirestore(Event event) async {
-    // get ref to the event document
     DocumentReference eventRef =
         FirebaseFirestore.instance.collection('events').doc();
 
@@ -332,7 +328,6 @@ class _EventEditingPageState extends State<EventEditingPage> {
         .doc(user!.uid)
         .get();
 
-    // add event to firestore
     event.id = eventRef.id;
     event.userId = user.uid;
     event.userName = userData['userName'];

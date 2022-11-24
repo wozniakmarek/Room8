@@ -19,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late List<Map<String, Object>> _pages;
-  int _selectedPageIndex = 3;
+  int _selectedPageIndex = 0;
 
   void _selectPage(int index) {
     setState(() {

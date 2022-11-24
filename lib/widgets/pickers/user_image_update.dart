@@ -17,7 +17,6 @@ class UserImageUpdate extends StatefulWidget {
 }
 
 class _UserImageUpdateState extends State<UserImageUpdate> {
-  //get current user image and show in widget, allow user to update image with images from gallery
   File? _pickedImage;
 
   void _pickImage() async {
