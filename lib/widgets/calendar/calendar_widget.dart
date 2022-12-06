@@ -34,7 +34,6 @@ class CalendarWidgetState extends State<CalendarWidget> {
       setState(() {
         isInitialLoaded = true;
       });
-      //add listener to firestore collection
       fireStoreReference.collection('events').snapshots().listen((event) {
         for (var element in event.docChanges) {
           if (element.type == DocumentChangeType.added) {
@@ -75,7 +74,7 @@ class CalendarWidgetState extends State<CalendarWidget> {
 
   Future<void> getDataFromFireStore() async {
     var snapShotsValue = await fireStoreReference.collection('events').get();
-    //
+
     final Random random = new Random();
     List<Event> list = snapShotsValue.docs
         .map((e) => Event(
@@ -100,7 +99,6 @@ class CalendarWidgetState extends State<CalendarWidget> {
     return SfCalendar(
       view: CalendarView.month,
       dataSource: events,
-      //set Monday as the first day of the week
       firstDayOfWeek: 1,
       monthViewSettings: MonthViewSettings(
           appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
@@ -113,11 +111,9 @@ class CalendarWidgetState extends State<CalendarWidget> {
   }
 
   _buildBottomSheet(EventDataSource events, DateTime? date) {
-    //return SfCalendar view with the required properties to create the calendar view with timelineDay view.
     return Container(
       child: SfCalendar(
           view: CalendarView.timelineWeek,
-          //set Monday as the first day of the week
           firstDayOfWeek: 1,
           dataSource: events,
           timeSlotViewSettings: TimeSlotViewSettings(

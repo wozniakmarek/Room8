@@ -22,7 +22,6 @@ class _NewMessageState extends State<NewMessage> {
         .collection('users')
         .doc(user!.uid)
         .get();
-    // widget.sendMessage(_enteredMessage);
     FirebaseFirestore.instance.collection('chat').add({
       'text': _enteredMessage,
       'createdAt': Timestamp.now(),
@@ -42,7 +41,6 @@ class _NewMessageState extends State<NewMessage> {
         children: <Widget>[
           Expanded(
             child: TextField(
-              //color of the text in the text field white in this case
               style: TextStyle(color: Colors.black),
               decoration: InputDecoration(labelText: 'Send a message...'),
               controller: _controller,

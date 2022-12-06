@@ -31,9 +31,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         email: user!.email!, password: currentPassword);
 
     user.reauthenticateWithCredential(cred).then((value) {
-      user.updatePassword(newPassword).then((_) {}).catchError((error) {
-        //Error, show something
-      });
+      user.updatePassword(newPassword).then((_) {}).catchError((error) {});
     }).catchError((err) {});
   }
 
@@ -52,7 +50,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       });
 
       _changePassword(currentPassword, password);
-      //get User Credentials
       final user = await FirebaseAuth.instance.currentUser;
       final ref = FirebaseStorage.instance
           .ref()
@@ -69,7 +66,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         'image_url': url,
       });
 
-      //update user 'chat' collection with new username and image url where userId is the same for currentUser
       await FirebaseFirestore.instance
           .collection('chat')
           .where('userId', isEqualTo: user.uid)
@@ -83,7 +79,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         });
       });
 
-      //update user events with new username userId is the same for currentUser
       await FirebaseFirestore.instance
           .collection('events')
           .where('userId', isEqualTo: user.uid)
@@ -242,7 +237,6 @@ class _UpdateFormState extends State<UpdateForm> {
               _userName = value!;
             },
           ),
-          //textFormField for current password
           TextFormField(
             key: const ValueKey('currentPassword'),
             validator: (value) {

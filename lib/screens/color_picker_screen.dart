@@ -49,9 +49,6 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
                 builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                   if (snapshot.hasData) {
                     return FastColorPicker(
-                      //height: 300,
-                      //width: 300,
-
                       selectedColor: Color(
                         int.parse(snapshot.data!['color'], radix: 16),
                       ),

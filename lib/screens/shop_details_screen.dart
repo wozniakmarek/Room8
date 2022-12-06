@@ -34,6 +34,7 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> {
                 .collection('shop')
                 .doc(widget.id)
                 .collection('items')
+                .orderBy('checked', descending: false)
                 .snapshots(),
             builder: (ctx, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -137,7 +138,6 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      //delete item and create new item with new name
                                       FirebaseFirestore.instance
                                           .collection('shop')
                                           .doc(widget.id)

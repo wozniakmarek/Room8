@@ -84,7 +84,6 @@ class _ShopScreenState extends State<ShopScreen> {
                                 );
                               });
                         } else if (value == 2) {
-                          //delete
                           fireStoreReference
                               .collection('shop')
                               .doc(documentSnapshot.id)

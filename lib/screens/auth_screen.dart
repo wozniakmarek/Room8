@@ -155,7 +155,6 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   Container(
                     padding: EdgeInsets.all(16),
-                    //margin left: 20, right: 20,
                     width: deviceSize.width * 0.85,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
