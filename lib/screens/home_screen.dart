@@ -10,7 +10,7 @@ import 'package:room8/screens/respons_screen.dart';
 import 'package:room8/screens/shop_screen.dart';
 
 import 'calendar_screen.dart';
-import 'count_screen.dart';
+import 'expenses_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -19,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late List<Map<String, Object>> _pages;
-  int _selectedPageIndex = 2;
+  int _selectedPageIndex = 3;
 
   void _selectPage(int index) {
     setState(() {
@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
         'title': 'Shop',
       },
       {
-        'page': CountScreen(),
+        'page': ExpensesScreen(),
         'title': 'Count',
       },
     ];
@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             backgroundColor: Theme.of(context).primaryColor,
             icon: Icon(Icons.attach_money),
-            label: 'Money',
+            label: 'Expenses',
           ),
         ],
       ),

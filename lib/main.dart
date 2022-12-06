@@ -9,6 +9,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:room8/screens/home_screen.dart';
 import 'package:room8/screens/splash_screen.dart';
+import 'package:room8/utilis/constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,6 +37,21 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
+      // theme: ThemeData(
+      //   fontFamily: 'Raleway',
+      //   primaryColor: COLOR_GRAPE,
+      //   backgroundColor: COLOR_GRAPE.withOpacity(0.9),
+      //   accentColor: Color.fromARGB(255, 80, 8, 91),
+      //   focusColor: Color.fromARGB(255, 80, 8, 91).withOpacity(0.9),
+      //   accentColorBrightness: Brightness.dark,
+      //   buttonTheme: ButtonTheme.of(context).copyWith(
+      //     buttonColor: Color.fromARGB(255, 80, 8, 91).withOpacity(0.9),
+      //     textTheme: ButtonTextTheme.primary,
+      //     shape: RoundedRectangleBorder(
+      //       borderRadius: BorderRadius.circular(20),
+      //     ),
+      //   ),
+      // ),
       /*themeMode: ThemeMode.dark,
       darkTheme: ThemeData.dark().copyWith(
         primaryColor: Color.fromARGB(255, 80, 8, 91).withOpacity(0.9),
