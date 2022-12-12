@@ -9,53 +9,67 @@ Widget appointmentBuilder(BuildContext context,
   final Challenge appointment = calendarAppointmentDetails.appointments.first;
   return Column(
     children: [
-      //on left show category icon and on right points
-      //in the middle show title and description
       Container(
         decoration: BoxDecoration(
           color: Color(int.parse(appointment.color, radix: 16)),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Row(
+        child:
+            //show the icon on left side of the appointment, title, userName and description in center and points with checkbox to update points on right
+            Row(
           children: [
             Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Color(int.parse(appointment.color, radix: 16)),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(IconData(appointment.category,
-                    fontFamily: 'MaterialIcons'))),
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: Color(int.parse(appointment.color, radix: 16)),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                IconData(appointment.category, fontFamily: 'MaterialIcons'),
+              ),
+            ),
             SizedBox(
               width: 10,
             ),
-            Flexible(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     appointment.title,
                     style: TextStyle(
-                      //letters crossed out if completed
-                      //decoration: TextDecoration.lineThrough
-
                       color: Colors.black,
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Text(appointment.description,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 12,
-                      ),
-                      overflow: TextOverflow.ellipsis),
-                  Text(appointment.userName)
+                  Text(
+                    appointment.userName,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  //add description text but if its too long, cut it off and add ...
+                  Text(
+                    appointment.description,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    // maxLines: 1,
+                    // softWrap: false,
+                  ),
                 ],
               ),
             ),
-            Spacer(),
+            SizedBox(
+              width: 10,
+            ),
             Container(
               width: 50,
               height: 50,
@@ -78,31 +92,53 @@ Widget appointmentBuilder(BuildContext context,
             Checkbox(
                 value: appointment.completed,
                 onChanged: (bool? value) {
-                  //update completed value in firestore and in calendar appointment
-                  //and update calendar
-
-                  FirebaseFirestore.instance
-                      .collection('challenges')
-                      .doc(appointment.id)
-                      .update({'completed': value});
-
+                  //ask if shure to update
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text("Update Challenge"),
+                          content: Text("Are you sure you want to update?"),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("Cancel")),
+                            TextButton(
+                                onPressed: () {
+                                  //update the challenge in the database
+                                  FirebaseFirestore.instance
+                                      .collection('challenges')
+                                      .doc(appointment.id)
+                                      .update({
+                                    'completed': value,
+                                  });
+                                  if (value == true) {
+                                    FirebaseFirestore.instance
+                                        .collection('users')
+                                        .doc(appointment.userId)
+                                        .update({
+                                      'points': FieldValue.increment(
+                                          appointment.points)
+                                    });
+                                  } else {
+                                    FirebaseFirestore.instance
+                                        .collection('users')
+                                        .doc(appointment.userId)
+                                        .update({
+                                      'points': FieldValue.increment(
+                                          -appointment.points)
+                                    });
+                                  }
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("Update")),
+                          ],
+                        );
+                      });
                   //if completed is true add points to user points if false remove points
                   //from user points
-                  if (value == true) {
-                    FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(appointment.userId)
-                        .update({
-                      'points': FieldValue.increment(appointment.points)
-                    });
-                  } else {
-                    FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(appointment.userId)
-                        .update({
-                      'points': FieldValue.increment(-appointment.points)
-                    });
-                  }
                 }),
           ],
         ),

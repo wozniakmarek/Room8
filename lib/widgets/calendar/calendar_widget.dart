@@ -113,29 +113,32 @@ class CalendarWidgetState extends State<CalendarWidget> {
   _buildBottomSheet(EventDataSource events, DateTime? date) {
     return Container(
       child: SfCalendar(
-          view: CalendarView.timelineWeek,
-          firstDayOfWeek: 1,
-          dataSource: events,
-          timeSlotViewSettings: TimeSlotViewSettings(
-            timeInterval: const Duration(hours: 1),
-            timeIntervalHeight: 45,
-            minimumAppointmentDuration: const Duration(minutes: 60),
-          ),
-          headerHeight: 0,
-          todayHighlightColor: Colors.purple,
-          selectionDecoration: BoxDecoration(
-            color: Colors.purple.withOpacity(0.3),
-          ),
-          onTap: (details) {
-            if (details.appointments == null) return;
-            final Event event = details.appointments![0];
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => EventViewingPage(
-                          event: event,
-                        )));
-          }),
+        view: CalendarView.timelineWeek,
+        firstDayOfWeek: 1,
+        dataSource: events,
+        timeSlotViewSettings: TimeSlotViewSettings(
+          timeInterval: const Duration(hours: 1),
+          timeIntervalHeight: 45,
+          minimumAppointmentDuration: const Duration(minutes: 60),
+        ),
+        headerHeight: 0,
+        todayHighlightColor: Colors.purple,
+        selectionDecoration: BoxDecoration(
+          color: Colors.purple.withOpacity(0.3),
+        ),
+        onTap: (details) {
+          if (details.appointments == null) return;
+          final Event event = details.appointments![0];
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EventViewingPage(
+                event: event,
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

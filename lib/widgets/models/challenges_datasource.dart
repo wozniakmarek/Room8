@@ -446,6 +446,8 @@ class ChallengesDataSource extends CalendarDataSource<Challenge> {
       category: customData.category,
       color: customData.color,
       points: customData.points,
+      userId: customData.userId,
+      userName: customData.userName,
     );
   }
 }
